@@ -78,16 +78,22 @@ class Viaf2Wiki {
 	return $m[1];
       }
     }
-    elseif (in_array($key, ['NTA','NII'])) {
+    elseif (in_array($key, ['NTA','NII','SUDOC'])) {
       return $this->pairs[$key]['val'];
     }
   }
 
   public function  validate($key,$val) {
     if (array_key_exists($key, $this->sites)) {
-      if (preg_match('/'.$this->sites[$key]->regex.'/', $val)) {
+      if (preg_match('/^'.$this->sites[$key]->regex.'$/', $val)) {
 	print $this->q."\t".$this->sites[$key]->property."\t".$val.PHP_EOL;
       }
+      else { 
+	print '# FAILED format constraint: '.$key.' : '.$val.PHP_EOL;
+      }
+    }
+    else { 
+      print '#SKIPPED no formatting instructions: '.$key.' : '.$val.PHP_EOL;
     }
   }
 
@@ -97,7 +103,8 @@ class Viaf2Wiki {
 			  'ISNI' => new stdClass(),
 			  'BNF' => new stdClass(),
 			  'NTA' => new stdClass(),
-			  'NII' => new stdClass()
+			  'NII' => new stdClass(),
+			  'SUDOC' => new stdClass(),
 			  );
     $this->sites['LC']->regex = '((n|nb|nr|no|ns|sh|gf)([4-9][0-9]|00|20[0-1][0-9])[0-9]{6})';
     $this->sites['LC']->property = 'P244';
@@ -113,6 +120,9 @@ class Viaf2Wiki {
 
     $this->sites['NII']->regex = 'DA\d{7}[\dX]';
     $this->sites['NII']->property = 'P271'; 
+
+    $this->sites['SUDOC']->regex = '(\d{8}[\dX]|)';
+    $this->sites['SUDOC']->property = 'P269';
   }
 
   }
