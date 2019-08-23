@@ -2,10 +2,23 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-header('Content-type: text/plain');
 
-$viaf = new Viaf2Wiki('5081794', ['use_local'=>true, 'q'=>'Q61859030'] );
-print '<h1>Going for: '.$viaf->id.'</h1>'.PHP_EOL;
+
+if (! array_key_exists('viaf',$_REQUEST) && (!array_key_exists('q',$_REQUEST))) {
+  print '<form>';
+  print '<label for="q">Q:</label><input type="text" name="q" /><br />'.PHP_EOL;
+  print '<label for="viaf">VIAF:</label><input type="text" name="viaf" id="viaf" /><br />'.PHP_EOL;
+  print '<input type="submit" />'.PHP_EOL;
+  print '</form>';
+  die();
+}
+
+
+header('Content-type: text/plain');
+print_r($_REQUEST);
+//$viaf = new Viaf2Wiki('51308314', ['use_local'=>false, 'q'=>'Q27517636'] );
+$viaf = new Viaf2Wiki($_REQUEST['viaf'], ['use_local'=>false, 'q'=>$_REQUEST['q']] );
+print $viaf->q."\t"."P214"."\t"."\"".$viaf->id."\"".PHP_EOL;
 foreach ($viaf->pairs as $key => $arr) {
   $val = $viaf->prep($key);
   $viaf->validate($key,$val);
@@ -78,7 +91,7 @@ class Viaf2Wiki {
 	return $m[1];
       }
     }
-    elseif (in_array($key, ['NTA','NII','SUDOC'])) {
+    elseif (in_array($key, ['NTA','NII','SUDOC','BNE'])) {
       return $this->pairs[$key]['val'];
     }
   }
@@ -86,7 +99,7 @@ class Viaf2Wiki {
   public function  validate($key,$val) {
     if (array_key_exists($key, $this->sites)) {
       if (preg_match('/^'.$this->sites[$key]->regex.'$/', $val)) {
-	print $this->q."\t".$this->sites[$key]->property."\t".$val.PHP_EOL;
+	print $this->q."\t".$this->sites[$key]->property."\t"."\"".$val."\"".PHP_EOL;
       }
       else { 
 	print '# FAILED format constraint: '.$key.' : '.$val.PHP_EOL;
@@ -105,6 +118,7 @@ class Viaf2Wiki {
 			  'NTA' => new stdClass(),
 			  'NII' => new stdClass(),
 			  'SUDOC' => new stdClass(),
+			  'BNE' => new stdClass(),
 			  );
     $this->sites['LC']->regex = '((n|nb|nr|no|ns|sh|gf)([4-9][0-9]|00|20[0-1][0-9])[0-9]{6})';
     $this->sites['LC']->property = 'P244';
@@ -123,6 +137,9 @@ class Viaf2Wiki {
 
     $this->sites['SUDOC']->regex = '(\d{8}[\dX]|)';
     $this->sites['SUDOC']->property = 'P269';
+
+    $this->sites['BNE']->regex = '(XX|FF|a)\d{4,7}|(bima|bimo|bica|bis[eo]|bivi|Mise|Mimo|Mima)\d{10}|';
+    $this->sites['BNE']->property = 'P950';
   }
 
   }
