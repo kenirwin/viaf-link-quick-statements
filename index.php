@@ -102,9 +102,10 @@ class Viaf2Wiki {
   }
 
   public function  validate($key,$val) {
-    if (array_key_exists($key, $this->sites)) {
-      if (preg_match('/^'.$this->sites[$key]->regex.'$/', $val)) {
-	print $this->q."\t".$this->sites[$key]->property."\t"."\"".$val."\"\t". '/* '.$key.' /*'.PHP_EOL;
+    if (array_key_exists($key, $this->siteKeys)) {
+      $label = $this->siteKeys[$key];
+      if (preg_match('/^'.$this->sites->{$label}->regex.'$/', $val)) {
+	print $this->q."\t".$this->sites->{$label}->pItem."\t"."\"".$val."\"\t". '/* '.$key.' */'.PHP_EOL;
       }
       else { 
 	$this->errors.= '# FAILED format constraint: '.$key.' : '.$val.PHP_EOL;
@@ -116,9 +117,24 @@ class Viaf2Wiki {
   }
 
   private function setSites() {
+    $this->sites = json_decode(file_get_contents('auths-formats.json'))->contents;
+    $this->siteKeys = [
+		       "LC" => "Library of Congress authority ID",
+		       "ISNI" => "ISNI",
+		       'BNF' => "BnF ID",
+		       'NTA' => "NTA ID",
+                       'NII' => "CiNii author ID (books)",
+                       'NLI' => "NLI ID",
+                       'BIBSYS' => "BIBSYS ID",
+                       'RERO' => "RERO ID",
+		       'NUKAT' => 'NUKAT ID',
+		       'SUDOC' => 'SUDOC authorities ID',
+		       'NLA' => 'NLA ID',
+		       'DNB' => 'GND ID',
+		       ];
+    
+    /*
     $this->sites = array (
-			  'LC' => new stdClass(),
-			  'ISNI' => new stdClass(),
 			  'BNF' => new stdClass(),
 			  'NTA' => new stdClass(),
 			  'NII' => new stdClass(),
@@ -131,6 +147,7 @@ class Viaf2Wiki {
 			  'DNB' => new stdClass(),
 			  'PLWABN' => new stdClass(),
 			  );
+
     $this->sites['LC']->regex = '((n|nb|nr|no|ns|sh|gf)([4-9][0-9]|00|20[0-1][0-9])[0-9]{6})';
     $this->sites['LC']->property = 'P244';
 
@@ -169,9 +186,9 @@ class Viaf2Wiki {
 
     $this->sites['PLWABN']->regex = 'A[0-9]{7}[0-9X]';
     $this->sites['PLWABN']->property = 'P1695';
-
+   */
   }
-
+ 
   }
 
 ?>
