@@ -23,10 +23,12 @@ foreach ($viaf->pairs as $key => $arr) {
   $val = $viaf->prep($key);
   $viaf->validate($key,$val);
 } 
+print $viaf->errors;
 
 class Viaf2Wiki {
 
   public function __construct ($id,$opts) {
+    $this->errors = '';
     $this->base_url = 'https://viaf.org/viaf/';
     $this->format = '/viaf.json';
     $this->id = $id;
@@ -78,7 +80,8 @@ class Viaf2Wiki {
   }
 
   public function prep($key) {
-    if ($key == 'LC') {
+    // remove spaces
+    if (in_array($key,['LC','NUKAT'])) {
       return preg_replace('/ /','',$this->pairs[$key]['val']);
     }
     elseif ($key == 'ISNI') {
@@ -91,22 +94,24 @@ class Viaf2Wiki {
 	return $m[1];
       }
     }
-    elseif (in_array($key, ['NTA','NII','SUDOC','BNE'])) {
+      //leave alone
+    elseif (in_array($key, ['NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN'])) {
       return $this->pairs[$key]['val'];
     }
+    else { return $this->pairs[$key]['val']; }
   }
 
   public function  validate($key,$val) {
     if (array_key_exists($key, $this->sites)) {
       if (preg_match('/^'.$this->sites[$key]->regex.'$/', $val)) {
-	print $this->q."\t".$this->sites[$key]->property."\t"."\"".$val."\"".PHP_EOL;
+	print $this->q."\t".$this->sites[$key]->property."\t"."\"".$val."\"\t". '/* '.$key.' /*'.PHP_EOL;
       }
       else { 
-	print '# FAILED format constraint: '.$key.' : '.$val.PHP_EOL;
+	$this->errors.= '# FAILED format constraint: '.$key.' : '.$val.PHP_EOL;
       }
     }
     else { 
-      print '#SKIPPED no formatting instructions: '.$key.' : '.$val.PHP_EOL;
+      $this->errors .=  '#SKIPPED no formatting instructions: '.$key.' : '.$val.PHP_EOL;
     }
   }
 
@@ -119,6 +124,12 @@ class Viaf2Wiki {
 			  'NII' => new stdClass(),
 			  'SUDOC' => new stdClass(),
 			  'BNE' => new stdClass(),
+			  'NLI' => new stdClass(),
+			  'NUKAT' => new stdClass(),
+			  'BIBSYS' => new stdClass(),
+			  'RERO' => new stdClass(),
+			  'DNB' => new stdClass(),
+			  'PLWABN' => new stdClass(),
 			  );
     $this->sites['LC']->regex = '((n|nb|nr|no|ns|sh|gf)([4-9][0-9]|00|20[0-1][0-9])[0-9]{6})';
     $this->sites['LC']->property = 'P244';
@@ -130,7 +141,7 @@ class Viaf2Wiki {
     $this->sites['BNF']->property = 'P268';
 
     $this->sites['NTA']->regex = '\d{8}(\d|X)';
-    $this->sites['NTA']->property = 'P1008';
+    $this->sites['NTA']->property = 'P1006';
 
     $this->sites['NII']->regex = 'DA\d{7}[\dX]';
     $this->sites['NII']->property = 'P271'; 
@@ -140,6 +151,25 @@ class Viaf2Wiki {
 
     $this->sites['BNE']->regex = '(XX|FF|a)\d{4,7}|(bima|bimo|bica|bis[eo]|bivi|Mise|Mimo|Mima)\d{10}|';
     $this->sites['BNE']->property = 'P950';
+
+    $this->sites['NLI']->regex = '\d{9}';
+    $this->sites['NLI']->property = 'P949';
+
+    $this->sites['NUKAT']->regex = 'n(9[3-9]|0[0-2]|200[2-9]|201\d)\d{6}';
+    $this->sites['NUKAT']->property = 'P1207';
+
+    $this->sites['BIBSYS']->regex = '[1-9](\d{0,8}|\d{12})';
+    $this->sites['BIBSYS']->property = 'P1015';
+
+    $this->sites['RERO']->regex = '0[1-2]-[A-Z|0-9]{1,10}';
+    $this->sites['RERO']->property = 'P3065';
+
+    $this->sites['DNB']->regex = '|(1[01]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X])';
+    $this->sites['DNB']->property = 'P227';
+
+    $this->sites['PLWABN']->regex = 'A[0-9]{7}[0-9X]';
+    $this->sites['PLWABN']->property = 'P1695';
+
   }
 
   }
