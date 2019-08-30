@@ -139,7 +139,7 @@ class Viaf2Wiki {
       }
     }
       //leave alone
-    elseif (in_array($key, ['NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC'])) {
+    elseif (in_array($key, ['NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC', 'BNC'])) {
       return $this->pairs[$key]['val'];
     }
     else { return $this->pairs[$key]['val']; }
@@ -164,7 +164,7 @@ class Viaf2Wiki {
 	}
       }
       else { 
-	$this->errors .=  '# SKIPPED no formatting instructions: '.$key.' : '.$val.PHP_EOL;
+	$this->errors .=  '# SKIPPED: no formatting instructions: '.$key.' : '.$val.PHP_EOL;
       }
     }
   
@@ -172,24 +172,25 @@ class Viaf2Wiki {
   private function setSites() {
     $this->sites = json_decode(file_get_contents('auths-formats.json'))->contents;
     $this->siteKeys = [
-		       "B2Q" => "BanQ author ID",
-		       "DBC" => "DBC author ID",
-		       "LC" => "Library of Congress authority ID",
-		       'LNB' => 'LNB ID',
-		       "ISNI" => "ISNI",
-		       'BNF' => "BnF ID",
-		       'NTA' => "NTA ID",
-                       'NII' => "CiNii author ID (books)",
-                       'NLI' => "NLI ID",
-                       'BIBSYS' => "BIBSYS ID",
-                       'RERO' => "RERO ID",
-		       'NUKAT' => 'NUKAT ID',
-		       'SUDOC' => 'SUDOC authorities ID',
-		       'NLA' => 'NLA ID',
+                       'BIBSYS' => 'BIBSYS ID',
+		       'B2Q' => 'BanQ author ID',
+		       'BNE' => 'BNE ID',
+		       'BNF' => 'BnF ID',
+		       'BNC' => 'CANTIC ID',
+		       'DBC' => 'DBC author ID',
 		       'DNB' => 'GND ID',
-		       'NLA' => 'NLA ID',
-		       'NLR' => 'NLR ID',
+		       'ISNI' => 'ISNI',
+		       'LC' => 'Library of Congress authority ID',
+		       'LNB' => 'LNB ID',
+                       'NII' => 'CiNii author ID (books)',
 		       'NKC' => 'NKCR AUT ID',
+		       'NLA' => 'NLA ID',
+                       'NLI' => 'NLI ID',
+		       'NLR' => 'NLR ID',
+		       'NTA' => 'NTA ID',
+		       'NUKAT' => 'NUKAT ID',
+                       'RERO' => 'RERO ID',
+		       'SUDOC' => 'SUDOC authorities ID',
 		       ];
     
     /*
