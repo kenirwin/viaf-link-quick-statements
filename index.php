@@ -142,8 +142,13 @@ class Viaf2Wiki {
       if (array_key_exists($key, $this->siteKeys)) {
 	$label = $this->siteKeys[$key];
 
-	if (preg_match('/^'.$this->sites->{$label}->regex.'$/', $val)) {
 
+	if (in_array($this->sites->{$label}->pItem, $this->ids)) {
+	  $this->errors.= '# SKIPPED: already in Wikidata: '.$key.' : '.$val.PHP_EOL;
+	  return false;
+	}
+
+	if (preg_match('/^'.$this->sites->{$label}->regex.'$/', $val)) {
 	  print $this->q."\t".$this->sites->{$label}->pItem."\t"."\"".$val."\"\t". '/* '.$key.' */'.PHP_EOL;
 
 	}
@@ -152,7 +157,7 @@ class Viaf2Wiki {
 	}
       }
       else { 
-	$this->errors .=  '#SKIPPED no formatting instructions: '.$key.' : '.$val.PHP_EOL;
+	$this->errors .=  '# SKIPPED no formatting instructions: '.$key.' : '.$val.PHP_EOL;
       }
     }
   
