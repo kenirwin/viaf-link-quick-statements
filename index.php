@@ -3,7 +3,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-
+print '<h1>VIAF links to QuickStatements</h1>';
+print '<p><a href="https://tools.wmflabs.org/quickstatements/#/batch" target="qs">QuickStatements</a>'.PHP_EOL;
   print '<form>';
   print '<label for="q">Q:</label><input type="text" name="q" /><br />'.PHP_EOL;
   print '<label for="viaf">VIAF:</label><input type="text" name="viaf" id="viaf" /><br />'.PHP_EOL;
@@ -17,7 +18,12 @@ print '<pre>'.PHP_EOL;
 print_r($_REQUEST);
 //$viaf = new Viaf2Wiki('51308314', ['use_local'=>false, 'q'=>'Q27517636'] );
 $viaf = new Viaf2Wiki($_REQUEST['viaf'], ['use_local'=>false, 'q'=>$_REQUEST['q']] );
-print $viaf->q."\t"."P214"."\t"."\"".$viaf->id."\"\t/* VIAF*/".PHP_EOL;
+if (in_array('P214',$viaf->ids)) {
+  $viaf->errors.= '# SKIPPED: already in Wikidata: VIAF : '.$viaf->id.PHP_EOL;
+}
+else { 
+  print $viaf->q."\t"."P214"."\t"."\"".$viaf->id."\"\t/* VIAF*/".PHP_EOL;
+}
 foreach ($viaf->pairs as $key => $arr) {
   $val = $viaf->prep($key);
   $viaf->validate($key,$val);
