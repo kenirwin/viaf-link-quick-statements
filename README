@@ -1,0 +1,3 @@
+fetch-auth-formats.sh runs a WD query > wd.json to list all ID types
+
+auth-format-to-json.php converts wd.json to an array of objects that contains the regex and property number fore each ID type, keyed to WD's english name for the authority type. 
