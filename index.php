@@ -115,6 +115,13 @@ class Viaf2Wiki {
 	return $m[1];
       }
     }
+    
+    //delete leading zeros 
+    elseif (in_array($key, ['NLA'])) {
+      if (preg_match('/^0+(\d+)/', $this->pairs[$key]['val'], $m)) {
+	return $m[1];
+      }
+    }
 
     elseif ($key == 'ISNI') {
       if (preg_match('/(\d\d\d\d)(\d\d\d\d)(\d\d\d\d)(\d\d\d.)/',$this->pairs[$key]['val'],$m)) {
@@ -179,6 +186,7 @@ class Viaf2Wiki {
 		       'SUDOC' => 'SUDOC authorities ID',
 		       'NLA' => 'NLA ID',
 		       'DNB' => 'GND ID',
+		       'NLA' => 'NLA ID',
 		       'NLR' => 'NLR ID',
 		       'NKC' => 'NKCR AUT ID',
 		       ];
