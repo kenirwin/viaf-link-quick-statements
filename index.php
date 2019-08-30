@@ -4,26 +4,26 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 
-if (! array_key_exists('viaf',$_REQUEST) && (!array_key_exists('q',$_REQUEST))) {
   print '<form>';
   print '<label for="q">Q:</label><input type="text" name="q" /><br />'.PHP_EOL;
   print '<label for="viaf">VIAF:</label><input type="text" name="viaf" id="viaf" /><br />'.PHP_EOL;
   print '<input type="submit" />'.PHP_EOL;
   print '</form>';
+if (! array_key_exists('viaf',$_REQUEST) && (!array_key_exists('q',$_REQUEST))) {
   die();
 }
 
-
-header('Content-type: text/plain');
+print '<pre>'.PHP_EOL;
 print_r($_REQUEST);
 //$viaf = new Viaf2Wiki('51308314', ['use_local'=>false, 'q'=>'Q27517636'] );
 $viaf = new Viaf2Wiki($_REQUEST['viaf'], ['use_local'=>false, 'q'=>$_REQUEST['q']] );
-print $viaf->q."\t"."P214"."\t"."\"".$viaf->id."\"".PHP_EOL;
+print $viaf->q."\t"."P214"."\t"."\"".$viaf->id."\"\t/* VIAF*/".PHP_EOL;
 foreach ($viaf->pairs as $key => $arr) {
   $val = $viaf->prep($key);
   $viaf->validate($key,$val);
 } 
 print $viaf->errors;
+print '</pre>'.PHP_EOL;
 
 class Viaf2Wiki {
 
@@ -84,6 +84,14 @@ class Viaf2Wiki {
     if (in_array($key,['LC','NUKAT'])) {
       return preg_replace('/ /','',$this->pairs[$key]['val']);
     }
+
+    // just grab the numbers
+    elseif ($key == 'NLR') {
+      if (preg_match('/(\d+)/', $this->pairs[$key]['val'],$m)) {
+	return $m[1];
+      }
+    }
+
     elseif ($key == 'ISNI') {
       if (preg_match('/(\d\d\d\d)(\d\d\d\d)(\d\d\d\d)(\d\d\d.)/',$this->pairs[$key]['val'],$m)) {
 	return $m[1].' '.$m[2].' '.$m[3].' '.$m[4];
@@ -95,7 +103,7 @@ class Viaf2Wiki {
       }
     }
       //leave alone
-    elseif (in_array($key, ['NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN'])) {
+    elseif (in_array($key, ['NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC'])) {
       return $this->pairs[$key]['val'];
     }
     else { return $this->pairs[$key]['val']; }
@@ -119,6 +127,7 @@ class Viaf2Wiki {
   private function setSites() {
     $this->sites = json_decode(file_get_contents('auths-formats.json'))->contents;
     $this->siteKeys = [
+		       "DBC" => "DBC author ID",
 		       "LC" => "Library of Congress authority ID",
 		       "ISNI" => "ISNI",
 		       'BNF' => "BnF ID",
@@ -131,6 +140,7 @@ class Viaf2Wiki {
 		       'SUDOC' => 'SUDOC authorities ID',
 		       'NLA' => 'NLA ID',
 		       'DNB' => 'GND ID',
+		       'NLR' => 'NLR ID',
 		       ];
     
     /*
