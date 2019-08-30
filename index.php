@@ -110,7 +110,7 @@ class Viaf2Wiki {
     }
 
     // just grab the numbers
-    elseif (in_array($key, ['NLR'])) {
+    elseif (in_array($key, ['NLR','B2Q'])) {
       if (preg_match('/(\d+)/', $this->pairs[$key]['val'],$m)) {
 	return $m[1];
       }
@@ -172,6 +172,7 @@ class Viaf2Wiki {
   private function setSites() {
     $this->sites = json_decode(file_get_contents('auths-formats.json'))->contents;
     $this->siteKeys = [
+		       "B2Q" => "BanQ author ID",
 		       "DBC" => "DBC author ID",
 		       "LC" => "Library of Congress authority ID",
 		       'LNB' => 'LNB ID',
