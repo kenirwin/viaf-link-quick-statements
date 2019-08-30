@@ -44,6 +44,7 @@ class Viaf2Wiki {
 
     $this->getData(); //creates $this->obj
     $this->findPairs();
+    $this->getExistingIds();
   }
 
   private function getData() {
@@ -79,6 +80,29 @@ class Viaf2Wiki {
     }
   }
 
+  public function getExistingIds() {
+    include('SPARQLQueryDispatcher.class.php');
+    
+    $endpointUrl = 'https://query.wikidata.org/sparql';
+    $sparqlQueryString = 'SELECT ?predicate ?object WHERE { wd:'. $this->q.' ?predicate ?object }';
+    
+    $queryDispatcher = new SPARQLQueryDispatcher($endpointUrl);
+    $queryResult = $queryDispatcher->query($sparqlQueryString);
+    
+    //var_dump ($queryResult);
+    $props = array();
+    
+    $arr = $queryResult['results']['bindings'];
+    
+    foreach ($arr as $key=>$item) {
+      $prop = $item['predicate']['value'];
+      if (preg_match('/\/(P\d+)$/', $prop, $m)) {
+    array_push($props,$m[1]);
+      }
+    }
+    $this->ids = $props;
+  }
+  
   public function prep($key) {
     // remove spaces
     if (in_array($key,['LC','NUKAT'])) {
@@ -86,7 +110,7 @@ class Viaf2Wiki {
     }
 
     // just grab the numbers
-    elseif ($key == 'NLR') {
+    elseif (in_array($key, ['NLR'])) {
       if (preg_match('/(\d+)/', $this->pairs[$key]['val'],$m)) {
 	return $m[1];
       }
@@ -102,33 +126,43 @@ class Viaf2Wiki {
 	return $m[1];
       }
     }
+    elseif ($key == 'LNB') {
+      if (preg_match('/(\d{9})/', $this->pairs[$key]['val'], $m)) {
+	return $m[1];
+      }
+    }
       //leave alone
-    elseif (in_array($key, ['NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC'])) {
+    elseif (in_array($key, ['NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC'])) {
       return $this->pairs[$key]['val'];
     }
     else { return $this->pairs[$key]['val']; }
   }
 
   public function  validate($key,$val) {
-    if (array_key_exists($key, $this->siteKeys)) {
-      $label = $this->siteKeys[$key];
-      if (preg_match('/^'.$this->sites->{$label}->regex.'$/', $val)) {
-	print $this->q."\t".$this->sites->{$label}->pItem."\t"."\"".$val."\"\t". '/* '.$key.' */'.PHP_EOL;
+      if (array_key_exists($key, $this->siteKeys)) {
+	$label = $this->siteKeys[$key];
+
+	if (preg_match('/^'.$this->sites->{$label}->regex.'$/', $val)) {
+
+	  print $this->q."\t".$this->sites->{$label}->pItem."\t"."\"".$val."\"\t". '/* '.$key.' */'.PHP_EOL;
+
+	}
+	else { 
+	  $this->errors.= '# FAILED format constraint: '.$key.' : '.$val.PHP_EOL;
+	}
       }
       else { 
-	$this->errors.= '# FAILED format constraint: '.$key.' : '.$val.PHP_EOL;
+	$this->errors .=  '#SKIPPED no formatting instructions: '.$key.' : '.$val.PHP_EOL;
       }
     }
-    else { 
-      $this->errors .=  '#SKIPPED no formatting instructions: '.$key.' : '.$val.PHP_EOL;
-    }
-  }
-
+  
+  
   private function setSites() {
     $this->sites = json_decode(file_get_contents('auths-formats.json'))->contents;
     $this->siteKeys = [
 		       "DBC" => "DBC author ID",
 		       "LC" => "Library of Congress authority ID",
+		       'LNB' => 'LNB ID',
 		       "ISNI" => "ISNI",
 		       'BNF' => "BnF ID",
 		       'NTA' => "NTA ID",
@@ -141,6 +175,7 @@ class Viaf2Wiki {
 		       'NLA' => 'NLA ID',
 		       'DNB' => 'GND ID',
 		       'NLR' => 'NLR ID',
+		       'NKC' => 'NKCR AUT ID',
 		       ];
     
     /*
