@@ -116,7 +116,7 @@ class Viaf2Wiki {
     }
 
     // just grab the numbers
-    elseif (in_array($key, ['NLR','B2Q'])) {
+    elseif (in_array($key, ['NLR','B2Q','SRP'])) {
       if (preg_match('/(\d+)/', $this->pairs[$key]['val'],$m)) {
 	return $m[1];
       }
@@ -196,6 +196,7 @@ class Viaf2Wiki {
 		       'NTA' => 'NTA ID',
 		       'NUKAT' => 'NUKAT ID',
                        'RERO' => 'RERO ID',
+		       'SRP' => 'Syriac Biographical Dictionary ID',
 		       'SUDOC' => 'SUDOC authorities ID',
 		       ];
     
