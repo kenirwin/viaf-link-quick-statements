@@ -3,6 +3,13 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+include ('config.php');
+try {
+  $db = new PDO(DSN, USER, PASS);
+} catch (PDOException $e) {
+  print_r($e->getMessage);
+  }
+
 print '<h1>VIAF links to QuickStatements</h1>';
 print '<p><a href="https://tools.wmflabs.org/quickstatements/#/batch" target="qs">QuickStatements</a>'.PHP_EOL;
   print '<form>';
@@ -19,27 +26,42 @@ print_r($_REQUEST);
 //$viaf = new Viaf2Wiki('51308314', ['use_local'=>false, 'q'=>'Q27517636'] );
 $viaf = new Viaf2Wiki($_REQUEST['viaf'], ['use_local'=>false, 'q'=>$_REQUEST['q']] );
 if (in_array('P214',$viaf->ids)) {
-  $viaf->errors.= '# SKIPPED: already in Wikidata: VIAF : '.$viaf->id.PHP_EOL;
+  array_push($viaf->errors, ['type'=>'SKIPPED', 'reason'=>'already in Wikidata', 'key'=>'VIAF', 'val' =>$viaf->id]);
 }
 else { 
   print $viaf->q."\t"."P214"."\t"."\"".$viaf->id."\"\t/* VIAF*/".PHP_EOL;
 }
 foreach ($viaf->pairs as $key => $arr) {
-  $val = $viaf->prep($key);
-  $viaf->validate($key,$val);
+  if ($key != 'WKP') { //skip wikidata reference 
+    $val = $viaf->prep($key);
+    $viaf->validate($key,$val);
+  }
 } 
-print $viaf->errors;
+
+try {
+  foreach($viaf->errors as $err) {
+    if (! $err['reason'] == 'already in Wikidata') {
+      $stmt = $db->prepare('INSERT INTO error_log(error_type,error_message,q,viaf_id,code,value) values (?,?,?,?,?,?)');
+      $stmt->execute([$err['type'], $err['reason'], $viaf->q, $viaf->id, $err['key'], $err['val']]);
+    }
+    print '# '.$err['type'].': '.$err['reason']. ', ' .$viaf->q .', '. $err['key'] .', '. $err['val'].PHP_EOL;
+  }
+
+} catch (PDOException $e) {
+  print ($e->getMessage());
+  }
+
 print '</pre>'.PHP_EOL;
 
 class Viaf2Wiki {
 
   public function __construct ($id,$opts) {
-    $this->errors = '';
     $this->base_url = 'https://viaf.org/viaf/';
     $this->format = '/viaf.json';
     $this->id = $id;
     $this->pairs = array();
     $this->setSites();
+    $this->errors = array();
     if (array_key_exists('use_local',$opts) && ($opts['use_local'] == true)) {
       $this->local = true;
     }
@@ -157,7 +179,7 @@ class Viaf2Wiki {
 
 
 	if (in_array($this->sites->{$label}->pItem, $this->ids)) {
-	  $this->errors.= '# SKIPPED: already in Wikidata: '.$key.' : '.$val.PHP_EOL;
+	  array_push($this->errors, ['key' => $key, 'val' => $val, 'type' => 'SKIPPED', 'reason' => 'already in Wikidata']);
 	  return false;
 	}
 
@@ -166,11 +188,11 @@ class Viaf2Wiki {
 
 	}
 	else { 
-	  $this->errors.= '# FAILED format constraint: '.$key.' : '.$val.PHP_EOL;
+	  array_push($this->errors, ['key' => $key, 'val' => $val, 'type' => 'FAILED', 'reason' => 'format constraint']);
 	}
       }
       else { 
-	$this->errors .=  '# SKIPPED: no formatting instructions: '.$key.' : '.$val.PHP_EOL;
+	array_push($this->errors, ['key' => $key, 'val' => $val, 'type' => 'SKIPPED', 'reason' => 'no formatting instructions']);
       }
     }
   
@@ -199,64 +221,10 @@ class Viaf2Wiki {
 		       'SELIBR' => 'SELIBR ID',
 		       'SRP' => 'Syriac Biographical Dictionary ID',
 		       'SUDOC' => 'SUDOC authorities ID',
+		       // 'W2Z' => 'NOT USED FOR Norwegian filmography ID',
 		       ];
-    
-    /*
-    $this->sites = array (
-			  'BNF' => new stdClass(),
-			  'NTA' => new stdClass(),
-			  'NII' => new stdClass(),
-			  'SUDOC' => new stdClass(),
-			  'BNE' => new stdClass(),
-			  'NLI' => new stdClass(),
-			  'NUKAT' => new stdClass(),
-			  'BIBSYS' => new stdClass(),
-			  'RERO' => new stdClass(),
-			  'DNB' => new stdClass(),
-			  'PLWABN' => new stdClass(),
-			  );
-
-    $this->sites['LC']->regex = '((n|nb|nr|no|ns|sh|gf)([4-9][0-9]|00|20[0-1][0-9])[0-9]{6})';
-    $this->sites['LC']->property = 'P244';
-
-    $this->sites['ISNI']->regex = '(0000 000[0-4] [0-9]{4} [0-9]{3}[0-9X]|)';
-    $this->sites['ISNI']->property = 'P213';
-
-    $this->sites['BNF']->regex = '(\d{8}[0-9bcdfghjkmnpqrstvwxz]|)';
-    $this->sites['BNF']->property = 'P268';
-
-    $this->sites['NTA']->regex = '\d{8}(\d|X)';
-    $this->sites['NTA']->property = 'P1006';
-
-    $this->sites['NII']->regex = 'DA\d{7}[\dX]';
-    $this->sites['NII']->property = 'P271'; 
-
-    $this->sites['SUDOC']->regex = '(\d{8}[\dX]|)';
-    $this->sites['SUDOC']->property = 'P269';
-
-    $this->sites['BNE']->regex = '(XX|FF|a)\d{4,7}|(bima|bimo|bica|bis[eo]|bivi|Mise|Mimo|Mima)\d{10}|';
-    $this->sites['BNE']->property = 'P950';
-
-    $this->sites['NLI']->regex = '\d{9}';
-    $this->sites['NLI']->property = 'P949';
-
-    $this->sites['NUKAT']->regex = 'n(9[3-9]|0[0-2]|200[2-9]|201\d)\d{6}';
-    $this->sites['NUKAT']->property = 'P1207';
-
-    $this->sites['BIBSYS']->regex = '[1-9](\d{0,8}|\d{12})';
-    $this->sites['BIBSYS']->property = 'P1015';
-
-    $this->sites['RERO']->regex = '0[1-2]-[A-Z|0-9]{1,10}';
-    $this->sites['RERO']->property = 'P3065';
-
-    $this->sites['DNB']->regex = '|(1[01]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X])';
-    $this->sites['DNB']->property = 'P227';
-
-    $this->sites['PLWABN']->regex = 'A[0-9]{7}[0-9X]';
-    $this->sites['PLWABN']->property = 'P1695';
-   */
   }
- 
-  }
+  
+}
 
 ?>
