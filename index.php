@@ -1,8 +1,47 @@
+<html>
+<head>
+<title>VIAF links to QuickStatements</title>
+
 <?php
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+?>
 
+<style>
+#copy-link { display:none; border: 2px solid darkgreen; color: darkgreen; width: 8em; padding: 0.5em;}
+.copying { background-color: yellow; }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script>
+  function copyToClipboard(element) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(element).text()).select();
+  document.execCommand("copy");
+  $temp.remove();
+}
+
+  $(document).ready(function() {
+      var statements = $('#quickies').text();
+      if (statements.length > 0) {
+	$('#copy-link').toggle();
+	$('#copy-link').click(function() {
+	    copyToClipboard('#quickies');
+	    $(this).addClass('copying');
+	    setTimeout(function () {
+		$('#copy-link').removeClass('copying');
+	      }, 2000);
+	  });
+      }
+    });
+
+
+</script>
+
+
+<?
 include ('config.php');
 try {
   $db = new PDO(DSN, USER, PASS);
@@ -23,8 +62,12 @@ if (! array_key_exists('viaf',$_REQUEST) && (!array_key_exists('q',$_REQUEST))) 
 
 print '<pre>'.PHP_EOL;
 print_r($_REQUEST);
-//$viaf = new Viaf2Wiki('51308314', ['use_local'=>false, 'q'=>'Q27517636'] );
+print '</pre>'.PHP_EOL;
+
 $viaf = new Viaf2Wiki($_REQUEST['viaf'], ['use_local'=>false, 'q'=>$_REQUEST['q']] );
+
+print '<div id="copy-link">Copy Statements</div>'.PHP_EOL;
+print '<div id="quickies">'.PHP_EOL;
 if (in_array('P214',$viaf->ids)) {
   array_push($viaf->errors, ['type'=>'SKIPPED', 'reason'=>'already in Wikidata', 'key'=>'VIAF', 'val' =>$viaf->id]);
 }
@@ -37,6 +80,8 @@ foreach ($viaf->pairs as $key => $arr) {
     $viaf->validate($key,$val);
   }
 } 
+print '</pre>';
+print '</div>';
 
 try {
   foreach($viaf->errors as $err) {
