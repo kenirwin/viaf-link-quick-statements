@@ -132,7 +132,8 @@ class Viaf2Wiki {
 	}
 
 	if (preg_match('/^'.$this->sites->{$label}->regex.'$/', $val)) {
-	  $this->quickstatements .= $this->q."\t".$this->sites->{$label}->pItem."\t"."\"".$val."\"\t". '/* '.$key.' */'.PHP_EOL;
+	  //	  print_r($this->sites->{$label}
+	  $this->quickstatements .= $this->q."\t".$this->sites->{$label}->pItem."\t"."\"".$val."\"\t". '/* '.$key.' = '.$label .' */'.PHP_EOL;
 
 	}
 	else { 
