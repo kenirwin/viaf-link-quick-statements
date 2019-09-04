@@ -16,7 +16,7 @@ error_reporting(E_ALL);
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script>
   function copyToClipboard(element) {
-  var $temp = $("<input>");
+  var $temp = $("<textarea>");
   $("body").append($temp);
   $temp.val($(element).text()).select();
   document.execCommand("copy");
@@ -68,6 +68,7 @@ $viaf = new Viaf2Wiki($_REQUEST['viaf'], ['use_local'=>false, 'q'=>$_REQUEST['q'
 
 print '<div id="copy-link">Copy Statements</div>'.PHP_EOL;
 print '<div id="quickies">'.PHP_EOL;
+print '<pre>'.PHP_EOL;
 if (in_array('P214',$viaf->ids)) {
   array_push($viaf->errors, ['type'=>'SKIPPED', 'reason'=>'already in Wikidata', 'key'=>'VIAF', 'val' =>$viaf->id]);
 }
@@ -82,6 +83,8 @@ foreach ($viaf->pairs as $key => $arr) {
 } 
 print '</pre>';
 print '</div>';
+
+print '<pre>'.PHP_EOL;
 
 try {
   foreach($viaf->errors as $err) {
