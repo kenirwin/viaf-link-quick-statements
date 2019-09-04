@@ -69,6 +69,7 @@ print '</pre>'.PHP_EOL;
 
 $viaf = new Viaf2Wiki($_REQUEST['viaf'], ['use_local'=>false, 'q'=>$_REQUEST['q']] );
 
+print '<h2>'.$viaf->getItemLabel().' : '. $viaf->q . '</h2>'.PHP_EOL;
 print '<div id="copy-link">Copy Statements</div>'.PHP_EOL;
 print '<div id="quickies">'.PHP_EOL;
 print '<pre>'.PHP_EOL;

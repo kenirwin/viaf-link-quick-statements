@@ -8,6 +8,7 @@ class Viaf2Wiki {
     $this->id = $id;
     $this->pairs = array();
     $this->setSites();
+    $this->itemLabels = array();
     $this->quickstatements = '';
     $this->errors = array();
     if (array_key_exists('use_local',$opts) && ($opts['use_local'] == true)) {
@@ -46,13 +47,22 @@ class Viaf2Wiki {
     }
     $this->obj = json_decode($json);
   }
-  
+
+  public function getItemLabel () {
+    if (array_key_exists('en', $this->itemLabels)) {
+      return $this->itemLabels['en'];
+    }
+    else return $this->itemLabels[0];
+  }
+
   public function findPairs() {
     foreach ($this->obj->sources->source as $src) {
       //      print_r ($src->{'@nsid'});
-      list($key,$val) = preg_split('/\|/', $src->{'#text'});
-      $this->pairs[$key]['val'] = $val;
-      $this->pairs[$key]['nsid'] = $src->{'@nsid'};
+      if (isset($src->{'#text'})) {
+	  list($key,$val) = preg_split('/\|/', $src->{'#text'});
+	  $this->pairs[$key]['val'] = $val;
+	  $this->pairs[$key]['nsid'] = $src->{'@nsid'};
+	}
     }
   }
 
@@ -75,6 +85,11 @@ class Viaf2Wiki {
       if (preg_match('/\/(P\d+)$/', $prop, $m)) {
     array_push($props,$m[1]);
       }
+      if ($item['predicate']['value'] == 'http://www.w3.org/2000/01/rdf-schema#label') {
+	$lang = $item['object']['xml:lang'];
+	$this->itemLabels[$lang] = $item['object']['value'];
+      }
+	  
     }
     $this->ids = $props;
   }
