@@ -52,7 +52,7 @@ class Viaf2Wiki {
     if (array_key_exists('en', $this->itemLabels)) {
       return $this->itemLabels['en'];
     }
-    else return $this->itemLabels[0];
+    else return $this->itemLabels[array_keys($this->itemLabels)[0]];
   }
 
   public function findPairs() {
