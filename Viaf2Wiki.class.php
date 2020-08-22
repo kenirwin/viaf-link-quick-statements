@@ -129,6 +129,11 @@ class Viaf2Wiki {
 	return $m[1];
       }
     }
+    elseif ($key == 'VcBA ID') {
+      if (preg_match('/(\d+)\_(\d+)/', $this->pairs[$key]['val'], $m)) {
+	return ($m[1].'/'.$m[2]);
+      }
+    }
       //leave alone
     elseif (in_array($key, ['NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC', 'PTBNP','BNC','SELIBR'])) {
       return $this->pairs[$key]['val'];
@@ -164,6 +169,7 @@ class Viaf2Wiki {
   private function setSites() {
     $this->sites = json_decode(file_get_contents('auths-formats.json'))->contents;
     $this->siteKeys = [
+		       'BAV' => 'VcBA ID',
                        'BIBSYS' => 'NORAF ID',
 		       'B2Q' => 'BanQ author ID',
 		       'BNE' => 'BNE ID',
@@ -179,7 +185,7 @@ class Viaf2Wiki {
 		       'NLA' => 'NLA ID',
                        'NLI' => 'NLI ID',
 		       'NLR' => 'NLR ID',
-		       'NTA' => 'NTA ID',
+		       'NTA' => 'Nationale Thesaurus voor Auteurs ID',
 		       'NUKAT' => 'NUKAT ID',
 		       'PLWABN' => 'PLWABN ID',
 		       'PTBNP' => 'PTBNP ID',
