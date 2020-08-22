@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 ?>
 
 <style>
-#copy-link { display:none; border: 2px solid darkgreen; color: darkgreen; width: 8em; padding: 0.5em;}
+#copy-link { display:none; border: 2px solid darkgreen; color: darkgreen; width: 8em; padding: 0.5em; text-align: center; font-weight: bold; font-family: Calibri, Helvetica, sans-serif;}
 .copying { background-color: yellow; }
 </style>
 
