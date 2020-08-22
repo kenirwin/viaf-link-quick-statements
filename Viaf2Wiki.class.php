@@ -130,7 +130,7 @@ class Viaf2Wiki {
       }
     }
       //leave alone
-    elseif (in_array($key, ['NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC', 'BNC','SELIBR'])) {
+    elseif (in_array($key, ['NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC', 'PTBNP','BNC','SELIBR'])) {
       return $this->pairs[$key]['val'];
     }
     else { return $this->pairs[$key]['val']; }
@@ -181,6 +181,7 @@ class Viaf2Wiki {
 		       'NLR' => 'NLR ID',
 		       'NTA' => 'NTA ID',
 		       'NUKAT' => 'NUKAT ID',
+		       'PTBNP' => 'PTBNP ID',
                        'RERO' => 'RERO ID',
 		       'SELIBR' => 'SELIBR ID',
 		       'SRP' => 'Syriac Biographical Dictionary ID',
