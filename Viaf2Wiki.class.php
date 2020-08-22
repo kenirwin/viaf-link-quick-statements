@@ -164,10 +164,10 @@ class Viaf2Wiki {
   private function setSites() {
     $this->sites = json_decode(file_get_contents('auths-formats.json'))->contents;
     $this->siteKeys = [
-                       'BIBSYS' => 'BIBSYS ID',
+                       'BIBSYS' => 'NORAF ID',
 		       'B2Q' => 'BanQ author ID',
 		       'BNE' => 'BNE ID',
-		       'BNF' => 'BnF ID',
+		       'BNF' => 'Bibliothèque nationale de France ID',
 		       'BNC' => 'CANTIC ID',
 		       'DBC' => 'DBC author ID',
 		       'DNB' => 'GND ID',
@@ -186,7 +186,8 @@ class Viaf2Wiki {
                        'RERO' => 'RERO ID',
 		       'SELIBR' => 'SELIBR ID',
 		       'SRP' => 'Syriac Biographical Dictionary ID',
-		       'SUDOC' => 'SUDOC authorities ID',
+		       'SUDOC' => 'IdRef ID'
+		       //		       'SUDOC' => 'SUDOC authorities ID',
 		       // 'W2Z' => 'NOT USED FOR Norwegian filmography ID',
 		       ];
   }
