@@ -26,6 +26,6 @@ foreach ($arr as $k=>$item) {
 }
 $output = new stdClass;
 $output->contents = $outputArr;
-print(json_encode($output));
+print(json_encode($output, JSON_PRETTY_PRINT));
 
 ?>
