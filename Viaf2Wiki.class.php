@@ -135,7 +135,7 @@ class Viaf2Wiki {
       }
     }
       //leave alone
-    elseif (in_array($key, ['ERRR','NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC', 'PTBNP','BNC','SELIBR'])) {
+    elseif (in_array($key, ['ERRR','GRATEVE','NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC', 'PTBNP','BNC','SELIBR'])) {
       return $this->pairs[$key]['val'];
     }
     else { return $this->pairs[$key]['val']; }
@@ -178,6 +178,7 @@ class Viaf2Wiki {
 		       'DBC' => 'DBC author ID',
 		       'DNB' => 'GND ID',
 		       'ERRR' => 'ELNET ID',
+		       'GRATEVE' => 'National Library of Greece ID',
 		       'ISNI' => 'ISNI',
 		       'LC' => 'Library of Congress authority ID',
 		       'LNB' => 'LNB ID',
