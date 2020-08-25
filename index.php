@@ -6,6 +6,7 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+include('bootstrap.html');
 ?>
 
 <style>
@@ -39,7 +40,8 @@ error_reporting(E_ALL);
 
 
 </script>
-
+</head>
+<body class="container">
 
 <?
 include ('config.php');
@@ -60,7 +62,10 @@ print '<p><a href="https://tools.wmflabs.org/quickstatements/#/batch" target="qs
 if (! array_key_exists('viaf',$_REQUEST) && (!array_key_exists('q',$_REQUEST))) {
   die();
 }
-
+elseif ($_REQUEST['viaf'] == '') {
+  print('<div class="alert alert-danger">No VIAF ID detected in record</div>');
+  die('</body></html>');
+}
 /*
 print '<pre>'.PHP_EOL;
 print_r($_REQUEST);
@@ -107,3 +112,5 @@ try {
 print '</pre>'.PHP_EOL;
 
 ?>
+</body>
+</html>
