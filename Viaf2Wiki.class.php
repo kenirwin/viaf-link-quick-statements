@@ -129,6 +129,14 @@ class Viaf2Wiki {
 	return $m[1];
       }
     }
+    elseif ($key == 'RERO ID') {
+      if (preg_match('/^A/',$this->pairs[$key]['val'])) {
+	return '02-'.$this->pairs[$key]['val'];
+      }
+      else { 
+	return '01-'.$this->pairs[$key]['val'];
+      }
+    }
     elseif ($key == 'VcBA ID') {
       if (preg_match('/(\d+)\_(\d+)/', $this->pairs[$key]['val'], $m)) {
 	return ($m[1].'/'.$m[2]);
