@@ -10,7 +10,7 @@ include('bootstrap.html');
 ?>
 
 <style>
-#copy-link { display:none; border: 2px solid darkgreen; color: darkgreen; width: 8em; padding: 0.5em; text-align: center; font-weight: bold; font-family: Calibri, Helvetica, sans-serif;}
+#was-copy-link { display:none; border: 2px solid darkgreen; color: darkgreen; width: 8em; padding: 0.5em; text-align: center; font-weight: bold; font-family: Calibri, Helvetica, sans-serif;}
 .copying { background-color: yellow; }
 </style>
 
@@ -27,13 +27,12 @@ include('bootstrap.html');
   $(document).ready(function() {
       var statements = $('#quickies pre').text();
       if (statements.length > 0) {
-	$('#copy-link').toggle();
+	//	$('#copy-link').toggle();
 	$('#copy-link').click(function() {
 	    copyToClipboard('#quickies');
-	    $(this).addClass('copying');
-	    setTimeout(function () {
-		$('#copy-link').removeClass('copying');
-	      }, 500);
+	    $(this).removeClass('btn-outline-success');
+	    $(this).addClass('btn-warning');
+	    $(this).text('Copied Statements');
 	  });
       }
     });
@@ -75,7 +74,7 @@ print '</pre>'.PHP_EOL;
 $viaf = new Viaf2Wiki($_REQUEST['viaf'], ['use_local'=>false, 'q'=>$_REQUEST['q']] );
 
 print '<h2>'.$viaf->getItemLabel().' : '. $viaf->q . '</h2>'.PHP_EOL;
-print '<div id="copy-link">Copy Statements</div>'.PHP_EOL;
+print '<div id="copy-link" class="btn btn-outline-success">Copy Statements</div>'.PHP_EOL;
 print '<div id="quickies">'.PHP_EOL;
 print '<pre>'.PHP_EOL;
 if (in_array('P214',$viaf->ids)) {
