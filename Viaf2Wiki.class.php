@@ -129,7 +129,7 @@ class Viaf2Wiki {
 	return $m[1];
       }
     }
-    elseif ($key == 'RERO ID') {
+    elseif ($key == 'RERO') {
       if (preg_match('/^A/',$this->pairs[$key]['val'])) {
 	return '02-'.$this->pairs[$key]['val'];
       }
