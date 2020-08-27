@@ -198,7 +198,7 @@ class Viaf2Wiki {
 		       'NTA' => 'Nationale Thesaurus voor Auteurs ID',
 		       'NUKAT' => 'NUKAT ID',
 		       'PLWABN' => 'PLWABN ID',
-		       'PTBNP' => 'PTBNP ID',
+		       'PTBNP' => 'Portuguese National Library ID',
                        'RERO' => 'RERO ID',
 		       'SELIBR' => 'SELIBR ID',
 		       'SRP' => 'Syriac Biographical Dictionary ID',
