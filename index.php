@@ -12,6 +12,8 @@ include('bootstrap.html');
 <style>
 #was-copy-link { display:none; border: 2px solid darkgreen; color: darkgreen; width: 8em; padding: 0.5em; text-align: center; font-weight: bold; font-family: Calibri, Helvetica, sans-serif;}
 .copying { background-color: yellow; }
+.alert { margin-bottom: .5rem;     padding: .25rem 1rem; }
+#copy-link { margin-bottom: 1rem; }
 </style>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -25,7 +27,7 @@ include('bootstrap.html');
 }
 
   $(document).ready(function() {
-      var statements = $('#quickies pre').text();
+      var statements = $('#quickies').text();
       if (statements.length > 0) {
 	//	$('#copy-link').toggle();
 	$('#copy-link').click(function() {
@@ -76,9 +78,9 @@ $viaf = new Viaf2Wiki($_REQUEST['viaf'], ['use_local'=>false, 'q'=>$_REQUEST['q'
 print '<h2>'.$viaf->getItemLabel().' : '. $viaf->q . '</h2>'.PHP_EOL;
 print '<div id="copy-link" class="btn btn-outline-success">Copy Statements</div>'.PHP_EOL;
 print '<div id="quickies">'.PHP_EOL;
-print '<pre>'.PHP_EOL;
+print '<pre>';
 if (in_array('P214',$viaf->ids)) {
-  array_push($viaf->errors, ['type'=>'SKIPPED', 'reason'=>'already in Wikidata', 'key'=>'VIAF', 'val' =>$viaf->id]);
+  array_push($viaf->success, ['type'=>'SKIPPED', 'reason'=>'already in Wikidata', 'key'=>'VIAF', 'val' =>$viaf->id]);
 }
 else { 
   print $viaf->q."\t"."P214"."\t"."\"".$viaf->id."\"\t/* VIAF*/".PHP_EOL;
@@ -93,22 +95,26 @@ print $viaf->quickstatements;
 print '</pre>';
 print '</div>';
 
-print '<pre>'.PHP_EOL;
-
 try {
-  foreach($viaf->errors as $err) {
-    if (! $err['reason'] == 'already in Wikidata') {
-      $stmt = $db->prepare('INSERT INTO error_log(error_type,error_message,q,viaf_id,code,value) values (?,?,?,?,?,?)');
-      $stmt->execute([$err['type'], $err['reason'], $viaf->q, $viaf->id, $err['key'], $err['val']]);
+  $msg_classes = array("failures"=>"danger","warnings"=>"warning","success"=>"success"); 
+  foreach ($msg_classes as $cat => $bsClass) {
+    foreach($viaf->$cat as $err) {
+      print '<div class="alert alert-'.$bsClass.'">'.$err['type'].': '.$err['reason']. ', ' .$viaf->q .', '. $err['key'] .', '. $err['val'].'</div>'.PHP_EOL;
+      if ($cat != 'success') { 
+	$stmt = $db->prepare('INSERT INTO error_log(error_type,error_message,q,viaf_id,code,value) values (?,?,?,?,?,?)');
+	$stmt->execute([$err['type'], $err['reason'], $viaf->q, $viaf->id, $err['key'], $err['val']]);
+      }
     }
-    print '# '.$err['type'].': '.$err['reason']. ', ' .$viaf->q .', '. $err['key'] .', '. $err['val'].PHP_EOL;
+
+
   }
+
+
+
 
 } catch (PDOException $e) {
   print ($e->getMessage());
   }
-
-print '</pre>'.PHP_EOL;
 
 ?>
 </body>

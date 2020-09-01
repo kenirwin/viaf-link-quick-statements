@@ -10,7 +10,9 @@ class Viaf2Wiki {
     $this->setSites();
     $this->itemLabels = array();
     $this->quickstatements = '';
-    $this->errors = array();
+    $this->success = array();
+    $this->failures = array();
+    $this->warnings = array();
     if (array_key_exists('use_local',$opts) && ($opts['use_local'] == true)) {
       $this->local = true;
     }
@@ -155,7 +157,7 @@ class Viaf2Wiki {
 
 
 	if (in_array($this->sites->{$label}->pItem, $this->ids)) {
-	  array_push($this->errors, ['key' => $key, 'val' => $val, 'type' => 'SKIPPED', 'reason' => 'already in Wikidata']);
+	  array_push($this->success, ['key' => $key, 'val' => $val, 'type' => 'SKIPPED', 'reason' => 'already in Wikidata']);
 	  return false;
 	}
 
@@ -165,11 +167,11 @@ class Viaf2Wiki {
 
 	}
 	else { 
-	  array_push($this->errors, ['key' => $key, 'val' => $val, 'type' => 'FAILED', 'reason' => 'format constraint']);
+	  array_push($this->failures, ['key' => $key, 'val' => $val, 'type' => 'FAILED', 'reason' => 'format constraint']);
 	}
       }
       else { 
-	array_push($this->errors, ['key' => $key, 'val' => $val, 'type' => 'SKIPPED', 'reason' => 'no formatting instructions']);
+	array_push($this->warnings, ['key' => $key, 'val' => $val, 'type' => 'SKIPPED', 'reason' => 'no formatting instructions']);
       }
     }
   
