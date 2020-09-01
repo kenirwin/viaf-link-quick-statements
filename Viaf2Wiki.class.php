@@ -131,6 +131,11 @@ class Viaf2Wiki {
 	return $m[1];
       }
     }
+    elseif ($key == 'ICCU') {
+      if (preg_match('/([A-Z0-9]+)(\d{6})/', $this->pairs[$key]['val'], $m)){ 
+	return 'IT\\ICCU\\'.$m[1].'\\'.$m[2];
+      }
+    }
     elseif ($key == 'LNB') {
       if (preg_match('/(\d{9})/', $this->pairs[$key]['val'], $m)) {
 	return $m[1];
@@ -150,7 +155,7 @@ class Viaf2Wiki {
       }
     }
       //leave alone
-    elseif (in_array($key, ['ERRR','CAOONL','GRATEVE','NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC', 'PTBNP','BNC','SELIBR'])) {
+    elseif (in_array($key, ['BIBSYS','BNC','BNE','CAOONL','DBC','DNB','ERRR','GRATEVE','J9U','NTA','NII', 'NKC', 'NLI', 'PLWABN', 'PTBNP','SELIBR','SUDOC'])) {
       return $this->pairs[$key]['val'];
     }
     else { return $this->pairs[$key]['val']; }
@@ -196,7 +201,9 @@ class Viaf2Wiki {
 		       'DNB' => 'GND ID',
 		       'ERRR' => 'ELNET ID',
 		       'GRATEVE' => 'National Library of Greece ID',
+		       'ICCU' => 'SBN author ID',
 		       'ISNI' => 'ISNI',
+		       'J9U' => 'National Library of Israel J9U ID',
 		       'LC' => 'Library of Congress authority ID',
 		       'LNB' => 'LNB ID',
                        'NII' => 'CiNii author ID (books)',
