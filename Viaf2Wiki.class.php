@@ -126,6 +126,11 @@ class Viaf2Wiki {
 	return $m[1];
       }
     }
+    elseif ($key == 'BNCHL') { 
+      if (preg_match('/\d+(\d{9})/',$this->pairs[$key]['val'], $m)) {
+	return $m[1];
+      }
+    }
     elseif ($key == 'LNB') {
       if (preg_match('/(\d{9})/', $this->pairs[$key]['val'], $m)) {
 	return $m[1];
@@ -139,13 +144,13 @@ class Viaf2Wiki {
 	return '01-'.$this->pairs[$key]['val'];
       }
     }
-    elseif ($key == 'VcBA ID') {
+    elseif ($key == 'BAV') {
       if (preg_match('/(\d+)\_(\d+)/', $this->pairs[$key]['val'], $m)) {
 	return ($m[1].'/'.$m[2]);
       }
     }
       //leave alone
-    elseif (in_array($key, ['ERRR','GRATEVE','NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC', 'PTBNP','BNC','SELIBR'])) {
+    elseif (in_array($key, ['ERRR','CAOONL','GRATEVE','NTA','NII','SUDOC','BNE','NLI','BIBSYS','DNB','PLWABN', 'DBC', 'NKC', 'PTBNP','BNC','SELIBR'])) {
       return $this->pairs[$key]['val'];
     }
     else { return $this->pairs[$key]['val']; }
@@ -182,9 +187,11 @@ class Viaf2Wiki {
 		       'BAV' => 'VcBA ID',
                        'BIBSYS' => 'NORAF ID',
 		       'B2Q' => 'BanQ author ID',
+		       'BNCHL' => 'National Library of Chile ID',
 		       'BNE' => 'Biblioteca Nacional de España ID',
 		       'BNF' => 'Bibliothèque nationale de France ID',
 		       'BNC' => 'CANTIC ID',
+		       'CAOONL' => 'Canadiana NCF ID',
 		       'DBC' => 'DBC author ID',
 		       'DNB' => 'GND ID',
 		       'ERRR' => 'ELNET ID',
