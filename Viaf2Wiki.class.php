@@ -155,7 +155,7 @@ class Viaf2Wiki {
       }
     }
       //leave alone
-    elseif (in_array($key, ['BIBSYS','BNC','BNE','CAOONL','DBC','DNB','ERRR','GRATEVE','J9U','NTA','NII', 'NKC', 'NLI', 'PLWABN', 'PTBNP','SELIBR','SUDOC'])) {
+    elseif (in_array($key, ['BIBSYS','BLBNB','BNC','BNE','CAOONL','DBC','DNB','ERRR','GRATEVE','J9U','KRNLK','LIH','NTA','NII', 'NKC', 'NLI', 'NSK', 'PLWABN', 'PTBNP','SELIBR','SUDOC'])) {
       return $this->pairs[$key]['val'];
     }
     else { return $this->pairs[$key]['val']; }
@@ -192,6 +192,7 @@ class Viaf2Wiki {
 		       'BAV' => 'VcBA ID',
                        'BIBSYS' => 'NORAF ID',
 		       'B2Q' => 'BanQ author ID',
+		       'BLBNB' => 'National Library of Brazil ID',//P4619
 		       'BNCHL' => 'National Library of Chile ID',
 		       'BNE' => 'Biblioteca Nacional de España ID',
 		       'BNF' => 'Bibliothèque nationale de France ID',
@@ -204,13 +205,16 @@ class Viaf2Wiki {
 		       'ICCU' => 'SBN author ID',
 		       'ISNI' => 'ISNI',
 		       'J9U' => 'National Library of Israel J9U ID',
+		       'KRNLK' => 'National Library of Korea Identifier',//P5034
 		       'LC' => 'Library of Congress authority ID',
+		       'LIH' => 'National Library of Lithuania ID', //P7699
 		       'LNB' => 'LNB ID',
                        'NII' => 'CiNii author ID (books)',
 		       'NKC' => 'NKCR AUT ID',
 		       'NLA' => 'Libraries Australia ID',
                        'NLI' => 'NLI ID',
 		       'NLR' => 'NLR ID',
+		       'NSK' => 'NSK ID', //P1375 - National and University Library in Zagreb
 		       'NTA' => 'Nationale Thesaurus voor Auteurs ID',
 		       'NUKAT' => 'NUKAT ID',
 		       'PLWABN' => 'PLWABN ID',
